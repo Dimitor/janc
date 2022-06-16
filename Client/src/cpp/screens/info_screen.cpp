@@ -10,9 +10,10 @@ info_screen::info_screen(uint64_t cur_chat_id, std::weak_ptr<screen_manager> scr
 
 void info_screen::show()
 {
+    wclear(winparts[1]);
     mvwprintw(winparts[0], height + 1, 1, "%lu users", participants_quantity);
 
-    for (size_t i = page * height, scr_line_num = 1; i < buff.lines.size() && i < (page + 1) * height; ++i, ++scr_line_num)
+    for (size_t i = page * height, scr_line_num = 0; i < buff.lines.size() && scr_line_num < height; ++i, ++scr_line_num)
     {
         mvwprintw(winparts[1], scr_line_num, 0, "%s", buff.lines[i].c_str());
         wclrtoeol(winparts[1]);

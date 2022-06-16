@@ -63,6 +63,7 @@ void create_chat_screen::select_title(int response_num)
 
         line_search.clear();
         line_search.print_line();
+        line_search.max_length(255);
                     
         std::string printing_str = "Enter the name of the chat and press Enter key";
         if (selected_users.size() == 1)
@@ -103,6 +104,7 @@ void create_chat_screen::show()
 void create_chat_screen::hide()
 {
     line_search.clear();
+    line_search.max_length(32);
     found_users.clear();
     selected_users.clear();
     curscreen_num == scrnums::SEARCH_LINE;

@@ -61,6 +61,18 @@ int main(int argc, char *argv[])
         initscr();
         raw();
         keypad(stdscr, true);
+        
+        // int width, height;
+        // getmaxyx(stdscr, width, height); 
+        // if (width < 32 || height < 64)
+        // {
+
+        //     clear();
+        //     refresh();
+        //     printw("Your screen must be at least 64 characters wide and 64 characters high!\nwidth=%d height=%d", width, height);
+        //     getch();
+        //     return 0;
+        // }
 
         std::string ip{argv[1]};
         std::string port{argv[2]};

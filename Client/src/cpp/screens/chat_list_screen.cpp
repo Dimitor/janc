@@ -99,6 +99,11 @@ void chat_list_screen::handle_input(int c)
             if (cur_chat_num + 1 < chat_ids.size())
             {
                 ++cur_chat_num;
+               
+                if (start_chat_line_nums[cur_chat_num] >= (page + 1) * height)
+                {
+                    ++page;
+                }
                 print_title(true);
             }
         }
@@ -108,6 +113,11 @@ void chat_list_screen::handle_input(int c)
             if (cur_chat_num > 0)
             {
                 --cur_chat_num;
+               
+                if (start_chat_line_nums[cur_chat_num] < page * height)
+                {
+                    --page;
+                }
                 print_title(true);
             }
         }
