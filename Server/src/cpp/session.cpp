@@ -85,8 +85,8 @@ void session::on_read_header(err_code err, size_t bytes_count)
     }
     else
     {
-        close(err);
         srv.leave(session_id, shared_from_this());
+        close(err);
     }
 }
 
@@ -103,8 +103,8 @@ void session::on_read_body(err_code err, size_t bytes_count)
     }
     else
     {
-        close(err);
         srv.leave(session_id, shared_from_this());
+        close(err);
     }
 }
 
@@ -121,7 +121,7 @@ void session::on_write(err_code err, size_t bytes_count)
     }
     else
     {
-        close(err);
         srv.leave(session_id, shared_from_this());
+        close(err);
     }
 }

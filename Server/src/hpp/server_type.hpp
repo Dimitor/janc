@@ -18,9 +18,9 @@ struct server_type
     : db{ db }
     {}
 
-    void join(uint64_t connection_id, connection_ptr connection);
+    int join(uint64_t connection_id, connection_ptr connection);
 
-    void leave(uint64_t connection_id, connection_ptr connection);
+    int leave(uint64_t connection_id, connection_ptr connection);
 
     bool process_message(chat_message const &msg, connection_ptr connection);
 

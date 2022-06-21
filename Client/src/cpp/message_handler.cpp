@@ -219,9 +219,9 @@ bool message_handler::process_message(chat_message const &msg)
         case message_types::AUTHORIZE_USER:
         case message_types::REGISTER_USER:
         {
-            bool is_authenticated = (bool)idargs[0];
+            int authentication_res = static_cast<int>(idargs[0]);
 
-            if (is_authenticated)
+            if (authentication_res == 0)
             {
                 db->insert_user_data(username, password_len);    
                 message_info.type = message_types::LOAD_CHATS;
@@ -235,7 +235,7 @@ bool message_handler::process_message(chat_message const &msg)
             }
             else
             {
-                service_var = -1;
+                service_var = -authentication_res;
             }
         }
         break;

@@ -62,18 +62,6 @@ int main(int argc, char *argv[])
         raw();
         keypad(stdscr, true);
         
-        // int width, height;
-        // getmaxyx(stdscr, width, height); 
-        // if (width < 32 || height < 64)
-        // {
-
-        //     clear();
-        //     refresh();
-        //     printw("Your screen must be at least 64 characters wide and 64 characters high!\nwidth=%d height=%d", width, height);
-        //     getch();
-        //     return 0;
-        // }
-
         std::string ip{argv[1]};
         std::string port{argv[2]};
         std::string username;
@@ -180,16 +168,23 @@ int main(int argc, char *argv[])
             ++count;
         }
 
-        if (service_var == -1)
+        if (service_var < 0)
         {
             clear();
-            if (reg_flag)
+            if (service_var == -1)
             {
-                printw("This user is already exists in the system!");
+                if (reg_flag)
+                {
+                    printw("This user is already exists in the system!");
+                }
+                else
+                {
+                    printw("You entered uncorrect username or password!");
+                }
             }
-            else
+            else if (service_var == -2)
             {
-                printw("You entered uncorrect username or password!");
+                printw("You can't open more than five sessions at the same time!");
             }
             getch();
             user.close();

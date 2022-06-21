@@ -1,6 +1,6 @@
 #include "../hpp/server_type.hpp"
 
-void server_type::join(uint64_t connection_id, connection_ptr connection)
+int server_type::join(uint64_t connection_id, connection_ptr connection)
 {
     auto search_it = connections.find(connection_id);
     
@@ -8,7 +8,7 @@ void server_type::join(uint64_t connection_id, connection_ptr connection)
     {
         if (search_it->second.size() == 5)
         {
-            return;
+            return 1;
         }
         search_it->second.push_back(connection);
     }
@@ -16,13 +16,14 @@ void server_type::join(uint64_t connection_id, connection_ptr connection)
     {
         connections.emplace(connection_id, std::vector{ connection });
     }
+    return 0;
 }
 
-void server_type::leave(uint64_t connection_id, connection_ptr connection)
+int server_type::leave(uint64_t connection_id, connection_ptr connection)
 {
     auto search_it = connections.find(connection_id);
     
-    auto user_connections = search_it->second;
+    auto &user_connections = search_it->second;
     
     if (user_connections.size() > 1)
     {
@@ -39,6 +40,7 @@ void server_type::leave(uint64_t connection_id, connection_ptr connection)
     {
         connections.erase(search_it);
     }
+    return 0;
 }
 
 bool server_type::process_message(chat_message const &msg, connection_ptr connection)
@@ -275,22 +277,30 @@ bool server_type::process_record(chat_message const &rec_msg, connection_ptr con
             auto password = strargs[1];
             
             auto user_id = db.authorize(username, password);
+            auto join_res = 1;
             if (user_id.has_value())
             {
                 connection->id(*user_id);
-                join(*user_id, connection);
+                if (join(*user_id, connection) == 1)
+                {
+                    join_res = 2;
+                }
+                else 
+                {
+                    join_res = 0;
+                }
             }
 
             message_info.type = message_types::AUTHORIZE_USER;
             message_info.idargs.clear();
             message_info.strargs.clear();
-            message_info.idargs.push_back((uint64_t)(user_id.has_value()));
+            message_info.idargs.push_back(join_res);
 
             chat_message sending_msg = message_parser::parsed_to_chat_message(message_info);
 
             connection->send_msg(sending_msg);
 
-            return user_id.has_value();
+            return join_res == 0;
         }
         case message_types::REGISTER_USER:
         {
@@ -298,7 +308,8 @@ bool server_type::process_record(chat_message const &rec_msg, connection_ptr con
             auto password = strargs[1];
             
             auto user_id = db.get_user_id(username);
-            if (!user_id.has_value()) 
+            bool user_exists = user_id.has_value();
+            if (user_exists) 
             {
                 auto new_user_id = db.add_record(username, password);
                 connection->id(*new_user_id);
@@ -307,13 +318,13 @@ bool server_type::process_record(chat_message const &rec_msg, connection_ptr con
             message_info.type = message_types::REGISTER_USER;
             message_info.idargs.clear();
             message_info.strargs.clear();
-            message_info.idargs.push_back((uint64_t)(!user_id.has_value()));
+            message_info.idargs.push_back((uint64_t)user_exists);
 
             chat_message sending_msg = message_parser::parsed_to_chat_message(message_info);
 
             connection->send_msg(sending_msg);
 
-            return !user_id.has_value();
+            return !user_exists;
         }
         default: return false;
     }
