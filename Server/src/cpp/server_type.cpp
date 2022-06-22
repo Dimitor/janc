@@ -309,7 +309,7 @@ bool server_type::process_record(chat_message const &rec_msg, connection_ptr con
             
             auto user_id = db.get_user_id(username);
             bool user_exists = user_id.has_value();
-            if (user_exists) 
+            if (!user_exists) 
             {
                 auto new_user_id = db.add_record(username, password);
                 connection->id(*new_user_id);
